@@ -9,7 +9,7 @@ import 'package:scapia_hand_cricket_task/constants/app_assets.dart';
 import 'package:scapia_hand_cricket_task/constants/app_labels.dart';
 import 'package:scapia_hand_cricket_task/extensions/padding_extension.dart';
 import 'package:scapia_hand_cricket_task/extensions/text_extension.dart';
-import 'package:scapia_hand_cricket_task/game.dart';
+import 'package:scapia_hand_cricket_task/game/view/game.dart';
 
 class InDialog extends StatefulWidget {
   const InDialog({super.key});
@@ -19,16 +19,11 @@ class InDialog extends StatefulWidget {
 }
 
 class _InDialogState extends State<InDialog> {
-  late rive.StateMachineController? _userController;
-  late rive.StateMachineController? _botController;
-  rive.SMIInput<double>? _userGestureInput;
-  rive.SMIInput<double>? _botGestureInput;
-
-  void setHandGesture(rive.SMIInput<double>? input, int number) {
-    if (input != null) {
-      input.value = number.toDouble();
-    }
-  }
+  // void setHandGesture(rive.SMIInput<double>? input, int number) {
+  //   if (input != null) {
+  //     input.value = number.toDouble();
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -108,10 +103,7 @@ class _InDialogState extends State<InDialog> {
 
   TextButton button() {
     return TextButton(
-      onPressed:
-          () => Navigator.of(
-            context,
-          ).push(MaterialPageRoute(builder: (context) => Game())),
+      onPressed: () => Navigator.pop(context, true),
       style: TextButton.styleFrom(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(8), // Rounded corners

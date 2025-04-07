@@ -1,28 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:gap/gap.dart';
-
-class Game extends StatelessWidget {
-  const Game({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Column(
-        children: [
-          Gap(100),
-          SizedBox(
-            height: 75,
-
-            child: CustomPaint(
-              painter: ParallelogramPainter(),
-              child: Container(),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
 
 class ParallelogramPainter extends CustomPainter {
   @override
@@ -54,10 +30,10 @@ class ParallelogramPainter extends CustomPainter {
 
     final paint1 =
         Paint()
-          ..shader = const LinearGradient(
-            colors: [Colors.amber, Colors.amber],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
+          ..shader = LinearGradient(
+            colors: [Colors.amber, Colors.black],
+            begin: Alignment.topRight,
+            end: Alignment.bottomLeft,
           ).createShader(
             Rect.fromCenter(
               center: Offset(0, 0),
@@ -69,7 +45,7 @@ class ParallelogramPainter extends CustomPainter {
 
     final paint2 =
         Paint()
-          ..color = Colors.grey
+          ..color = Colors.grey.shade800
           ..style = PaintingStyle.fill;
     final paint4 =
         Paint()

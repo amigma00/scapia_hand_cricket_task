@@ -13,6 +13,7 @@ dependencies:
   rive: ^0.13.20
   stop_watch_timer: ^3.2.1
   gap:
+  circular_countdown_timer: ^0.2.4
 
 dev_dependencies:
   flutter_test:

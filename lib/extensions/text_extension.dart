@@ -35,6 +35,7 @@ extension AppText on String {
     double fontSize, {
     Color color = Colors.white,
     TextAlign? textAlign,
+    double? height,
   }) => Text(
     string,
     textAlign: textAlign,
@@ -42,6 +43,7 @@ extension AppText on String {
       fontSize: fontSize,
       color: color,
       fontWeight: FontWeight.w500,
+      height: height,
     ),
   );
 
@@ -63,12 +65,14 @@ extension AppText on String {
     double fontSize, {
     Color color = Colors.white,
     TextAlign? textAlign,
+    double? height,
   }) => Text(
     string,
     textAlign: textAlign,
     style: TextStyle(
       fontSize: fontSize,
       color: color,
+      height: height,
       fontWeight: FontWeight.w700,
     ),
   );

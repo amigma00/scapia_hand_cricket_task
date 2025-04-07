@@ -6,6 +6,10 @@ class AppImages {
   static const String four = 'assets/four.png';
   static const String five = 'assets/five.png';
   static const String six = 'assets/six.png';
+  static const String ball = 'assets/ball.png';
+  static const String background = 'assets/background.png';
+  static const String sixer = 'assets/sixer.png';
+  static const String batting = 'assets/batting.png';
 }
 
 class AppRives {

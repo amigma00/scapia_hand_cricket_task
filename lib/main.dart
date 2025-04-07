@@ -1,12 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:rive/rive.dart';
 import 'package:scapia_hand_cricket_task/extensions/padding_extension.dart';
 import 'package:scapia_hand_cricket_task/extensions/text_extension.dart';
-import 'package:scapia_hand_cricket_task/start_dialog.dart';
+import 'package:scapia_hand_cricket_task/game/cubit/game_cubit.dart';
+import 'package:scapia_hand_cricket_task/game/view/game.dart';
+import 'package:scapia_hand_cricket_task/game/Widgets/start_dialog.dart';
 
 void main() {
-  runApp(MaterialApp(home: const MainApp()));
+  runApp(
+    MaterialApp(
+      home: BlocProvider(create: (context) => GameCubit(), child: const Game()),
+    ),
+  );
 }
 
 class MainApp extends StatelessWidget {
