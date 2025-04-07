@@ -10,6 +10,9 @@ class AppImages {
   static const String background = 'assets/background.png';
   static const String sixer = 'assets/sixer.png';
   static const String batting = 'assets/batting.png';
+  static const String out = 'assets/out.png';
+  static const String youWon = 'assets/you_won.png';
+  static const String defend = 'assets/game_defend.webp';
 }
 
 class AppRives {

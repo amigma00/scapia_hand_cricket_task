@@ -1,4 +1,3 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:circular_countdown_timer/circular_countdown_timer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -32,17 +31,16 @@ class Game extends StatefulWidget {
 }
 
 class _GameState extends State<Game> {
-  CountDownController circularController = CountDownController();
-  bool isStart = false;
-
+  late GameCubit cubit;
   @override
   void initState() {
     super.initState();
-
+    bool isStart = false;
+    cubit = context.read<GameCubit>();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       await startGame(context) ?? false;
       isStart = await showCharms(context) ?? true;
-      if (isStart) circularController.start();
+      if (isStart) cubit.circularController.start();
     });
   }
 
@@ -51,74 +49,92 @@ class _GameState extends State<Game> {
     return SafeArea(
       child: Scaffold(
         backgroundColor: Colors.black,
-        body: Column(
-          children: [
-            SizedBox(
-              height: 75,
-              child: CustomPaint(
-                painter: ParallelogramPainter(),
-                child: Container(
-                  alignment: Alignment.center,
+        body: BlocBuilder<GameCubit, GameStarted>(
+          builder: (context, state) {
+            return Column(
+              children: [
+                SizedBox(
+                  height: 75,
+                  child: CustomPaint(
+                    painter: ParallelogramPainter(),
+                    child: Container(
+                      alignment: Alignment.center,
 
-                  child: BlocBuilder<GameCubit, GameStarted>(
-                    builder: (context, state) {
-                      print('print scores ${state.scores}');
-                      return Stack(
+                      child: Stack(
                         children: [
-                          scoresWidget(context, state.scores ?? []).paddingOnly(
-                            right: MediaQuery.of(context).size.width * .42,
-                          ),
-                          ballsWidget(context, state.ball ?? []).paddingOnly(
-                            left: MediaQuery.of(context).size.width * .42,
-                          ),
+                          (state.isBotBatting == true
+                                  ? ballsWidget(context, state.ball ?? [])
+                                  : scoresWidget(context, state.scores ?? []))
+                              .paddingOnly(
+                                right: MediaQuery.of(context).size.width * .42,
+                              ),
+                          (state.isBotBatting == true
+                                  ? scoresWidget(context, state.scores ?? [])
+                                  : ballsWidget(context, state.ball ?? []))
+                              .paddingOnly(
+                                left: MediaQuery.of(context).size.width * .42,
+                              ),
                         ],
-                      );
-                    },
-                  ),
-                ),
-              ),
-            ),
-            Expanded(
-              child: DecoratedBox(
-                decoration: BoxDecoration(
-                  image: DecorationImage(
-                    image: AssetImage(AppImages.background),
-                    fit: BoxFit.cover,
-                  ),
-                ),
-                child: Column(
-                  children: [
-                    SizedBox(
-                      width: 150,
-                      child: CustomPaint(
-                        painter: ScoreClip(
-                          gradient: const LinearGradient(
-                            colors: [
-                              Color(0xFFF5DEB3),
-                              Color(0xFFD4AF37),
-                            ], // Light gold to rich gold
-                            begin: Alignment.topCenter,
-                            end: Alignment.bottomCenter,
-                          ),
-                        ),
-                        child: ColoredBox(
-                          color: Colors.red.withValues(alpha: 0.0),
-                          child: Center(
-                            child: ('To Win: 10').textGilroy600(
-                              12,
-                              color: Colors.black,
-                            ),
-                          ),
-                        ).paddingOnly(right: 10),
                       ),
                     ),
-                    Gap(20),
-                    BlocBuilder<GameCubit, GameStarted>(
-                      // BlocSelector<GameCubit, GameStarted, List<int>>(
-                      //   selector: (state) => state.handGesture ?? [0, 0],
-                      builder: (context, state) {
-                        var handGesture = state.handGesture ?? [0, 0];
-                        return Container(
+                  ),
+                ),
+                Expanded(
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      image: DecorationImage(
+                        image: AssetImage(AppImages.background),
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                    child: Column(
+                      children: [
+                        Stack(
+                          alignment: Alignment.center,
+                          children: [
+                            SizedBox(
+                              width: 150,
+                              child: CustomPaint(
+                                painter: ScoreClip(
+                                  gradient: const LinearGradient(
+                                    colors: [
+                                      Color(0xFFF5DEB3),
+                                      Color(0xFFD4AF37),
+                                    ], // Light gold to rich gold
+                                    begin: Alignment.topCenter,
+                                    end: Alignment.bottomCenter,
+                                  ),
+                                ),
+                                child: Visibility(
+                                  visible: state.toWin != null,
+                                  child: Center(
+                                    child: ('To Win: ${state.toWin}')
+                                        .textGilroy600(12, color: Colors.black),
+                                  ).paddingOnly(right: 10),
+                                ),
+                              ),
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children:
+                                  state.isBotBatting == true
+                                      ? [
+                                        'bot'.textGilroy400(12),
+                                        'Aman'.textGilroy400(12),
+                                      ]
+                                      : [
+                                        'Aman'.textGilroy400(12),
+                                        'bot'.textGilroy400(12),
+                                      ],
+                            ).paddingSymmetric(horizontal: 16),
+                          ],
+                        ),
+                        Gap(20),
+                        // BlocBuilder<GameCubit, GameStarted>(
+                        //   builder: (context, state) {
+                        //     var handGesture = state.handGesture ?? [0, 0];
+                        //     return
+                        Container(
                           width: 302,
                           decoration: BoxDecoration(
                             border: Border.all(color: Colors.amber),
@@ -143,98 +159,102 @@ class _GameState extends State<Game> {
                                       3.1415926535,
                                     ), // Flip horizontally
                                 child: HandGestureScreen(
-                                  currentGesture: handGesture[0],
+                                  currentGesture: state.handGesture?[0] ?? 0,
                                   // currentGesture: 1,
                                 ),
                               ),
                               HandGestureScreen(
-                                currentGesture: handGesture[1],
+                                currentGesture: state.handGesture?[1] ?? 0,
                                 // currentGesture: 1,
                               ),
                             ],
                           ),
-                        );
-                      },
-                    ),
-                    Spacer(),
-                    CircularCountDownTimer(
-                      autoStart: false,
-                      // onStart: () {},
-                      onComplete: () {
-                        context.read<GameCubit>().onButtonPressed(
-                          random6(),
-                          context,
-                        );
-                        Future.delayed(
-                          Duration(seconds: 1),
-                          () => circularController.restart(),
-                        );
-                      },
-
-                      strokeCap: StrokeCap.round,
-                      strokeWidth: 4,
-                      fillColor: Colors.red.shade900,
-                      duration: 10,
-                      isReverse: true,
-                      isReverseAnimation: true,
-                      backgroundColor: Colors.black12.withValues(alpha: .2),
-                      initialDuration: 0,
-                      textStyle: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w700,
-                        fontSize: 22,
-                      ),
-                      controller: circularController,
-                      width: 50,
-                      height: 50,
-                      ringColor: Colors.black,
-                    ),
-                    Gap(10),
-
-                    'Pick a number before timer runs out'.textGilroy700(
-                      14,
-                      color: Colors.white,
-                    ),
-                    Row(
-                      children: List.generate(
-                        3,
-                        (index) => Expanded(
-                          child: ScaledButton(
-                            onTap: () {
-                              circularController.restart();
-
-                              context.read<GameCubit>().onButtonPressed(
-                                index + 1,
-                                context,
-                              );
-                            },
-                            child: Image.asset(Game.buttons[index]),
-                          ).paddingSymmetric(horizontal: 15),
+                          //   );
+                          // },
                         ),
-                      ),
-                    ).paddingSymmetric(horizontal: 16),
-                    Row(
-                      children: List.generate(
-                        3,
-                        (index) => Expanded(
-                          child: ScaledButton(
-                            onTap: () {
-                              circularController.restart();
-                              context.read<GameCubit>().onButtonPressed(
-                                index + 4,
-                                context,
-                              );
-                            },
-                            child: Image.asset(Game.buttons[index + 3]),
-                          ).paddingSymmetric(horizontal: 15),
+                        Spacer(),
+                        CircularCountDownTimer(
+                          autoStart: false,
+
+                          onComplete: () async {
+                            if (!((state.isBotBatting ?? true) &&
+                                (state.isBotStart ?? true))) {
+                              cubit.onButtonPressed(random6(), context);
+                            } else {
+                              cubit.isTogBotStart();
+                            }
+                            await Future.delayed(
+                              Duration(seconds: 1),
+                              () => cubit.circularController.restart(),
+                            );
+                          },
+
+                          strokeCap: StrokeCap.round,
+                          strokeWidth: 4,
+                          fillColor: Colors.red.shade900,
+                          duration: 10,
+                          isReverse: true,
+                          isReverseAnimation: true,
+                          backgroundColor: Colors.black12.withValues(alpha: .2),
+                          initialDuration: 0,
+                          textStyle: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w700,
+                            fontSize: 22,
+                          ),
+                          controller: cubit.circularController,
+                          width: 50,
+                          height: 50,
+                          ringColor: Colors.black,
                         ),
-                      ),
-                    ).paddingSymmetric(horizontal: 16),
-                  ],
+                        Gap(10),
+
+                        'Pick a number before timer runs out'.textGilroy700(
+                          14,
+                          color: Colors.white,
+                        ),
+                        Row(
+                          children: List.generate(
+                            3,
+                            (index) => Expanded(
+                              child: ScaledButton(
+                                onTap: () {
+                                  cubit.circularController.restart();
+
+                                  context.read<GameCubit>().onButtonPressed(
+                                    index + 1,
+                                    context,
+                                  );
+                                },
+                                child: Image.asset(Game.buttons[index]),
+                              ).paddingSymmetric(horizontal: 15),
+                            ),
+                          ),
+                        ).paddingSymmetric(horizontal: 16),
+                        Row(
+                          children: List.generate(
+                            3,
+                            (index) => Expanded(
+                              child: ScaledButton(
+                                onTap: () {
+                                  cubit.circularController.restart();
+                                  context.read<GameCubit>().onButtonPressed(
+                                    index + 4,
+                                    context,
+                                  );
+                                },
+                                child: Image.asset(Game.buttons[index + 3]),
+                              ).paddingSymmetric(horizontal: 15),
+                            ),
+                          ),
+                        ).paddingSymmetric(horizontal: 16),
+                      ],
+                    ),
+                  ),
                 ),
-              ),
-            ),
-          ],
+              ],
+            );
+          },
         ),
       ),
     );

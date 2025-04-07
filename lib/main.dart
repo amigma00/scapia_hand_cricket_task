@@ -28,16 +28,16 @@ class MainApp extends StatelessWidget {
 
         children: [
           Text('Hello World!', textAlign: TextAlign.center),
-          TextButton(
-            onPressed: () => startGame(context),
-            child: Text('strat game'),
-          ),
+          // TextButton(
+          //   onPressed: () => startGame(context),
+          //   child: Text('strat game'),
+          // ),
         ],
       ),
     );
   }
 }
 
-void startGame(BuildContext context) {
-  showDialog(context: context, builder: (context) => InDialog());
-}
+// void startGame(BuildContext context) {
+//   showDialog(context: context, builder: (context) => InDialog());
+// }
