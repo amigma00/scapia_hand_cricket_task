@@ -1,5 +1,3 @@
-import 'package:circular_countdown_timer/circular_countdown_timer.dart';
-
 enum GameStatus { initial, loading, success, failure }
 
 extension GameX on GameStatus {
@@ -18,6 +16,7 @@ class GameStarted extends GameState {
   final List<int>? handGesture;
   final bool? isBotBatting;
   final bool? isBotStart;
+  final bool? isSecondInningStart;
   final GameStatus? status;
 
   GameStarted({
@@ -27,6 +26,7 @@ class GameStarted extends GameState {
     this.scores,
     this.handGesture,
     this.isBotBatting,
+    this.isSecondInningStart,
     this.status,
   });
 
@@ -37,6 +37,7 @@ class GameStarted extends GameState {
     List<int>? handGesture,
     bool? isBotBatting,
     bool? isBotStart,
+    bool? isSecondInningStart,
     GameStatus? status,
   }) => GameStarted(
     toWin: toWin ?? this.toWin,
@@ -45,6 +46,7 @@ class GameStarted extends GameState {
     handGesture: handGesture ?? this.handGesture,
     isBotBatting: isBotBatting ?? this.isBotBatting,
     isBotStart: isBotStart ?? this.isBotStart,
+    isSecondInningStart: isSecondInningStart ?? this.isSecondInningStart,
     status: status ?? this.status,
   );
   GameStarted get cleared => GameStarted(
@@ -53,6 +55,7 @@ class GameStarted extends GameState {
     scores: null,
     handGesture: null,
     isBotBatting: false,
+
     status: GameStatus.initial,
   );
 }

@@ -15,15 +15,16 @@ class ShowCharms extends StatefulWidget {
 class _ShowCharmsState extends State<ShowCharms> {
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
-    Future.delayed(Duration(seconds: 2), () => Navigator.pop(context, true));
+    Future.delayed(Duration(seconds: 2), () {
+      if (mounted) Navigator.pop(context, true);
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    return ColoredBox(
-      color: Colors.black.withValues(alpha: .6),
+    return Dialog(
+      backgroundColor: Colors.transparent,
       child: Stack(
         alignment: Alignment.center,
         // mainAxisAlignment: MainAxisAlignment.center,

@@ -8,4 +8,7 @@ class AppLabels {
   static const String highestScorer =
       'Be the highest scorer & win signed RCB merch';
   static const String startPlaying = 'Start playing';
+  static const String toWin = 'To Win:';
+  static const String youAlmost = 'You Almost Won';
+  static const String playAgain = 'Play Again';
 }

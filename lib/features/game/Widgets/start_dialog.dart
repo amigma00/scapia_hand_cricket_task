@@ -5,11 +5,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:gap/gap.dart';
 import 'package:rive/rive.dart' as rive;
+import 'package:scapia_hand_cricket_task/components/scapia_button.dart';
 import 'package:scapia_hand_cricket_task/constants/app_assets.dart';
 import 'package:scapia_hand_cricket_task/constants/app_labels.dart';
 import 'package:scapia_hand_cricket_task/extensions/padding_extension.dart';
 import 'package:scapia_hand_cricket_task/extensions/text_extension.dart';
-import 'package:scapia_hand_cricket_task/game/view/game.dart';
+import 'package:scapia_hand_cricket_task/features/game/view/game.dart';
 
 class InDialog extends StatefulWidget {
   const InDialog({super.key});
@@ -91,40 +92,15 @@ class _InDialogState extends State<InDialog> {
                   Gap(10),
                   stepThree(),
                   Gap(35),
-                  button(),
+                  ScapiaButton(
+                    onPressed: () => Navigator.pop(context, true),
+                    label: AppLabels.startPlaying,
+                  ),
                 ],
               ).paddingAll(24),
             ),
           ],
         ),
-      ),
-    );
-  }
-
-  TextButton button() {
-    return TextButton(
-      onPressed: () => Navigator.pop(context, true),
-      style: TextButton.styleFrom(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8), // Rounded corners
-        ),
-      ),
-      child: Container(
-        padding: EdgeInsets.all(10),
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [
-              Colors.amber.shade300,
-              Colors.amber.shade700,
-            ], // Gold gradient
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
-          borderRadius: BorderRadius.circular(8),
-        ),
-        // Adjust size
-        alignment: Alignment.center,
-        child: AppLabels.startPlaying.textGilroy900(18, color: Colors.black),
       ),
     );
   }

@@ -1,22 +1,32 @@
+import 'dart:math';
+
 import 'package:circular_countdown_timer/circular_countdown_timer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
+import 'package:scapia_hand_cricket_task/constants/app_labels.dart';
 
-import 'package:scapia_hand_cricket_task/game/Widgets/hand_animations.dart';
-import 'package:scapia_hand_cricket_task/game/Widgets/scaled_button.dart';
-import 'package:scapia_hand_cricket_task/game/Widgets/score_board.dart';
+import 'package:scapia_hand_cricket_task/features/game/Widgets/hand_animations.dart';
+import 'package:scapia_hand_cricket_task/features/game/Widgets/scaled_button.dart';
+import 'package:scapia_hand_cricket_task/features/game/Widgets/score_board.dart';
 
 import 'package:scapia_hand_cricket_task/constants/app_assets.dart';
 import 'package:scapia_hand_cricket_task/extensions/padding_extension.dart';
 import 'package:scapia_hand_cricket_task/extensions/text_extension.dart';
-import 'package:scapia_hand_cricket_task/game/Widgets/show_charms.dart';
-import 'package:scapia_hand_cricket_task/game/cubit/game_cubit.dart';
-import 'package:scapia_hand_cricket_task/game/cubit/game_state.dart';
-import 'package:scapia_hand_cricket_task/game/Widgets/start_dialog.dart';
+import 'package:scapia_hand_cricket_task/features/game/Widgets/show_charms.dart';
+import 'package:scapia_hand_cricket_task/features/game/cubit/game_cubit.dart';
+import 'package:scapia_hand_cricket_task/features/game/cubit/game_state.dart';
+import 'package:scapia_hand_cricket_task/features/game/Widgets/start_dialog.dart';
 
 class Game extends StatefulWidget {
   const Game({super.key});
+
+  @override
+  State<Game> createState() => _GameState();
+}
+
+class _GameState extends State<Game> {
+  late GameCubit cubit;
   static const buttons = [
     AppImages.one,
     AppImages.two,
@@ -25,22 +35,17 @@ class Game extends StatefulWidget {
     AppImages.five,
     AppImages.six,
   ];
-
-  @override
-  State<Game> createState() => _GameState();
-}
-
-class _GameState extends State<Game> {
-  late GameCubit cubit;
   @override
   void initState() {
     super.initState();
-    bool isStart = false;
+
     cubit = context.read<GameCubit>();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (!mounted) return;
       await startGame(context) ?? false;
-      isStart = await showCharms(context) ?? true;
-      if (isStart) cubit.circularController.start();
+      if (!mounted) return;
+      bool isStart = await cubit.showCharms(context) ?? true;
+      if (isStart && mounted) cubit.circularController.start();
     });
   }
 
@@ -108,24 +113,22 @@ class _GameState extends State<Game> {
                                 child: Visibility(
                                   visible: state.toWin != null,
                                   child: Center(
-                                    child: ('To Win: ${state.toWin}')
-                                        .textGilroy600(12, color: Colors.black),
+                                    child:
+                                        ('${AppLabels.toWin} ${max(0, (state.toWin ?? 0) - ((state.scores?.isNotEmpty ?? false) ? state.scores?.reduce((a, b) => a + b) ?? 0 : 0))}')
+                                            .textGilroy600(
+                                              12,
+                                              color: Colors.black,
+                                            ),
                                   ).paddingOnly(right: 10),
                                 ),
                               ),
                             ),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children:
-                                  state.isBotBatting == true
-                                      ? [
-                                        'bot'.textGilroy400(12),
-                                        'Aman'.textGilroy400(12),
-                                      ]
-                                      : [
-                                        'Aman'.textGilroy400(12),
-                                        'bot'.textGilroy400(12),
-                                      ],
+                              children: [
+                                'Aman'.textGilroy400(12),
+                                'bot'.textGilroy400(12),
+                              ],
                             ).paddingSymmetric(horizontal: 16),
                           ],
                         ),
@@ -159,13 +162,19 @@ class _GameState extends State<Game> {
                                       3.1415926535,
                                     ), // Flip horizontally
                                 child: HandGestureScreen(
-                                  currentGesture: state.handGesture?[0] ?? 0,
-                                  // currentGesture: 1,
+                                  currentGesture:
+                                      // state.isBotBatting == true
+                                      //     ? (state.handGesture?[1] ?? 0)
+                                      //     :
+                                      state.handGesture?[0] ?? 0,
                                 ),
                               ),
                               HandGestureScreen(
-                                currentGesture: state.handGesture?[1] ?? 0,
-                                // currentGesture: 1,
+                                currentGesture:
+                                    // state.isBotBatting == true
+                                    //     ? (state.handGesture?[0] ?? 0)
+                                    //     :
+                                    state.handGesture?[1] ?? 0,
                               ),
                             ],
                           ),
@@ -178,8 +187,9 @@ class _GameState extends State<Game> {
 
                           onComplete: () async {
                             if (!((state.isBotBatting ?? true) &&
-                                (state.isBotStart ?? true))) {
-                              cubit.onButtonPressed(random6(), context);
+                                    (state.isBotStart ?? true) ||
+                                (state.isSecondInningStart ?? true))) {
+                              cubit.onButtonPressed(random6());
                             } else {
                               cubit.isTogBotStart();
                             }
@@ -223,10 +233,9 @@ class _GameState extends State<Game> {
 
                                   context.read<GameCubit>().onButtonPressed(
                                     index + 1,
-                                    context,
                                   );
                                 },
-                                child: Image.asset(Game.buttons[index]),
+                                child: Image.asset(buttons[index]),
                               ).paddingSymmetric(horizontal: 15),
                             ),
                           ),
@@ -240,10 +249,9 @@ class _GameState extends State<Game> {
                                   cubit.circularController.restart();
                                   context.read<GameCubit>().onButtonPressed(
                                     index + 4,
-                                    context,
                                   );
                                 },
-                                child: Image.asset(Game.buttons[index + 3]),
+                                child: Image.asset(buttons[index + 3]),
                               ).paddingSymmetric(horizontal: 15),
                             ),
                           ),
@@ -326,11 +334,6 @@ class _GameState extends State<Game> {
 
   Future startGame(BuildContext context) =>
       showDialog(context: context, builder: (context) => InDialog());
-
-  Future<bool?> showCharms(BuildContext context) => showDialog<bool>(
-    context: context,
-    builder: (context) => ShowCharms(charm: AppImages.batting),
-  );
 }
 
 class ScoreClip extends CustomPainter {
