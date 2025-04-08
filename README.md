@@ -19,7 +19,7 @@ A gesture-based hand cricket game built with Flutter — combining charm animati
 
 ### Prerequisites
 
-- Flutter SDK: `>=3.7.2`
+- Flutter SDK: `>=3.29.2`
 - Dart SDK: Compatible with Flutter 3.7.2
 - Android Studio / VS Code
 
@@ -86,15 +86,15 @@ This is a task-specific repository, but contributions for refactoring, bug fixes
 
 ## 📄 License
 
-This project is licensed for evaluation and demonstration purposes. Contact [your-email] for permissions and usage rights.
+This project is licensed for evaluation and demonstration purposes. Contact [ali.aliaman786@gmail.com ] for permissions and usage rights.
 
 ---
 
 ## 🔗 Contact
 
 For queries or collaboration:
-- GitHub: [your-github]
-- Email: [your-email]
+- GitHub: [amigma00]
+- Email: [ali.aliaman786@gmail.com]
 
 ---
 
